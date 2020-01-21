@@ -1,0 +1,75 @@
+---
+title: "Statistical Inference Project 2 - Part 2"
+author: "Daniel"
+date: "1/20/2020"
+output: html_document
+keep_md: true
+---
+
+## Loading and preprocessing the data
+Set Global Options
+```{r}
+knitr::opts_chunk$set(warnings=FALSE, message=FALSE, echo = TRUE)
+```
+<h1> Question 1 </h1>
+<p>Load the ToothGrowth data and perform some basic exploratory data analyses</p>
+```{r}
+# Load dataset
+data("ToothGrowth")
+# use str function to look at data
+str(ToothGrowth)
+```
+
+```{r}
+# Change dose to factor
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+# Check that supp and dose are of same type 
+str(ToothGrowth)
+```
+
+<h1>Question 2 </h1>
+<p>Provid a basic summary of the data</p>
+```{r}
+# Call ggplot2
+library(ggplot2)
+# use summmary fct to show breakdown of dataset
+summary(ToothGrowth)
+# Create a boxplot graph 
+ggplot(data = ToothGrowth, aes(x = dose, y = len)) + geom_boxplot(aes(fill = dose))
+# Create graphics for toothgrowth from supplement type
+ggplot(data = ToothGrowth, aes(x = supp, y = len)) + geom_boxplot(aes(fill = supp))
+```
+
+<h1> Question 3 </h1>
+<p>Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)</p>
+```{r}
+# Check for difference due to different supplement type. Assume unequal variances for the two groups
+t.test(len~supp, data = ToothGrowth)
+``` 
+<p> The p value is 0.06 and the range of the confidence interaval so we cannot reject the null hypothesis that different supplements have no effect on tooth length</p>
+<p> Next, we can look at the three different doses and their effects on tooth length</p>
+
+```{r}
+# First we will break the ToothGrowth data into three subsets, one for each dose
+dose0.5_1.0 <- subset(ToothGrowth, dose %in% c(0.5, 1.0))
+dose0.5_2.0 <- subset(ToothGrowth, dose %in% c(0.5, 2.0))
+dose1.0_2.0 <- subset(ToothGrowth, dose %in% c(1.0, 2.0))
+
+# Test for doses
+t.test(len ~ dose, data = dose0.5_1.0)
+t.test(len ~ dose, data = dose0.5_2.0)
+t.test(len ~ dose, data = dose1.0_2.0)
+
+```
+<p>All three t tests produce p values under 5% and do not include 0 in their confidence intervals so we can reject the hypothesis. These test show that the length of teeth increases as you increase the dose</p>
+
+<h1> Question 4 </h1>
+<p> State your conclusions and the assumptions needed for your conclusions </p>
+
+<h4> Conclusions </h4>
+1. The type of the supplement does not effect tooth length
+2. The dose given does effect tooth length
+
+<h4> Assumptions </h4>
+1. The sample population was representative of the total population
+2. The experiment was performed in such a way that the doses and supplements were randomly administered
